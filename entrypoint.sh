@@ -104,6 +104,13 @@ if [ $wait_count -ge $max_wait ]; then
 fi
 
 # Start the handler in the foreground
-# 이 스크립트가 컨테이너의 메인 프로세스가 됩니다.
-echo "Starting the handler..."
-exec python3 handler.py
+echo "🐍 Checking Python environment..."
+python3 --version
+python3 -c "import runpod; print('RunPod installed')" || echo "❌ RunPod NOT installed"
+python3 -c "import websocket; print('Websocket installed')" || echo "❌ Websocket NOT installed"
+
+echo "🏁 Starting the handler..."
+python3 handler.py
+HANDLER_EXIT=$?
+echo "❌ Handler exited with code $HANDLER_EXIT"
+exit $HANDLER_EXIT
