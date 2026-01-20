@@ -5,7 +5,12 @@ set -e
 
 # Download required LoRAs to container disk (no volume required)
 LORA_DIR=/comfyui/models/loras
-mkdir -p "$LORA_DIR"
+DIFFUSION_DIR=/ComfyUI/models/diffusion_models
+CLIP_DIR=/ComfyUI/models/clip_vision
+TEXT_DIR=/ComfyUI/models/text_encoders
+VAE_DIR=/ComfyUI/models/vae
+
+mkdir -p "$LORA_DIR" "$DIFFUSION_DIR" "$CLIP_DIR" "$TEXT_DIR" "$VAE_DIR"
 
 download_if_missing() {
   local url="$1"
@@ -17,6 +22,28 @@ download_if_missing() {
   echo "Downloading $(basename "$dest")"
   curl -L --fail --retry 6 --retry-delay 5 --output "$dest" "$url"
 }
+
+# Core Models
+download_if_missing "https://huggingface.co/Kijai/WanVideo_comfy_fp8_scaled/resolve/main/I2V/Wan2_2-I2V-A14B-HIGH_fp8_e4m3fn_scaled_KJ.safetensors" \
+  "$DIFFUSION_DIR/Wan2_2-I2V-A14B-HIGH_fp8_e4m3fn_scaled_KJ.safetensors"
+
+download_if_missing "https://huggingface.co/Kijai/WanVideo_comfy_fp8_scaled/resolve/main/I2V/Wan2_2-I2V-A14B-LOW_fp8_e4m3fn_scaled_KJ.safetensors" \
+  "$DIFFUSION_DIR/Wan2_2-I2V-A14B-LOW_fp8_e4m3fn_scaled_KJ.safetensors"
+
+download_if_missing "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/high_noise_model.safetensors" \
+  "$LORA_DIR/high_noise_model.safetensors"
+
+download_if_missing "https://huggingface.co/lightx2v/Wan2.2-Lightning/resolve/main/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/low_noise_model.safetensors" \
+  "$LORA_DIR/low_noise_model.safetensors"
+
+download_if_missing "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors" \
+  "$CLIP_DIR/clip_vision_h.safetensors"
+
+download_if_missing "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/umt5-xxl-enc-bf16.safetensors" \
+  "$TEXT_DIR/umt5-xxl-enc-bf16.safetensors"
+
+download_if_missing "https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1_VAE_bf16.safetensors" \
+  "$VAE_DIR/Wan2_1_VAE_bf16.safetensors"
 
 # URL-decode the basename so %20 becomes space, etc.
 url_basename() {
