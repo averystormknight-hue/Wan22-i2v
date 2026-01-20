@@ -2,6 +2,8 @@
 # FROM wlsdml1114/my-comfy-models:v1 as model_provider
 FROM wlsdml1114/multitalk-base:1.7 as runtime
 
+RUN apt-get update && apt-get install -y curl ca-certificates && rm -rf /var/lib/apt/lists/*
+
 RUN pip install -U "huggingface_hub[hf_transfer]"
 RUN pip install runpod websocket-client
 

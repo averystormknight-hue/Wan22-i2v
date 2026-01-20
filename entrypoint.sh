@@ -3,12 +3,14 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Download required LoRAs to container disk (no volume required)
-LORA_DIR=/comfyui/models/loras
-DIFFUSION_DIR=/ComfyUI/models/diffusion_models
-CLIP_DIR=/ComfyUI/models/clip_vision
-TEXT_DIR=/ComfyUI/models/text_encoders
-VAE_DIR=/ComfyUI/models/vae
+# Download required models to container disk (no volume required)
+# Paths must match /ComfyUI (case-sensitive)
+COMFY_ROOT=/ComfyUI
+LORA_DIR=$COMFY_ROOT/models/loras
+DIFFUSION_DIR=$COMFY_ROOT/models/diffusion_models
+CLIP_DIR=$COMFY_ROOT/models/clip_vision
+TEXT_DIR=$COMFY_ROOT/models/text_encoders
+VAE_DIR=$COMFY_ROOT/models/vae
 
 mkdir -p "$LORA_DIR" "$DIFFUSION_DIR" "$CLIP_DIR" "$TEXT_DIR" "$VAE_DIR"
 
@@ -73,7 +75,7 @@ download_if_missing "https://huggingface.co/Lythiga/WAN2.2_I2V_Lora/resolve/main
 
 # Start ComfyUI in the background
 echo "Starting ComfyUI in the background..."
-python /ComfyUI/main.py --listen --use-sage-attention &
+python3 /ComfyUI/main.py --listen --use-sage-attention &
 
 # Wait for ComfyUI to be ready
 echo "Waiting for ComfyUI to be ready..."
@@ -97,4 +99,4 @@ fi
 # Start the handler in the foreground
 # 이 스크립트가 컨테이너의 메인 프로세스가 됩니다.
 echo "Starting the handler..."
-exec python handler.py
+exec python3 handler.py
