@@ -225,6 +225,15 @@ def handler(job):
     prompt["498"]["inputs"]["context_overlap"] = job_input.get("context_overlap", 48)
     prompt["498"]["inputs"]["context_frames"] = length
 
+    # Force attention mode to 'sdpa' to support non-H100 GPUs (e.g. A100/L40)
+    # Node 122 and 549 are WanVideoModelLoader nodes
+    if "122" in prompt:
+        prompt["122"]["inputs"]["attention_mode"] = "sdpa"
+        logger.info("Forced attention_mode to 'sdpa' on node 122")
+    if "549" in prompt:
+        prompt["549"]["inputs"]["attention_mode"] = "sdpa"
+        logger.info("Forced attention_mode to 'sdpa' on node 549")
+
     # step 설정 적용
     if "834" in prompt:
         prompt["834"]["inputs"]["steps"] = steps
